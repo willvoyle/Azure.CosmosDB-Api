@@ -7,13 +7,10 @@ namespace Azure.CosmosDB.GeoApi.Harness
     {
         private static CustomerService _customerService;
 
-        public Program()
-        {
-            _customerService = new CustomerService(new CosmosDbBaseRepository());
-        }
-
         static void Main(string[] args)
         {
+            _customerService = new CustomerService(new CosmosDbBaseRepository());
+
             var id = _customerService.CreateCustomer(Customer.Mock());
 
             var person = _customerService.GetCustomer(id);
