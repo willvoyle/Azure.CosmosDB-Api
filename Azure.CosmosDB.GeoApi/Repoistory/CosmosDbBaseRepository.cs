@@ -1,13 +1,14 @@
 ﻿using Azure.CosmosDB.GeoApi.Helpers;
+using Azure.CosmosDB.GeoApi.Repository.Interfaces;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
 using System.Configuration;
 using System.Threading.Tasks;
 
-namespace Azure.CosmosDB.GeoApi
+namespace Azure.CosmosDB.GeoApi.Repository
 {
-    public class CosmosDbBaseRepository
+    public class CosmosDbBaseRepository : ICosmosDbBaseRepository
     {
         private readonly string _accountKey;
         private readonly Uri _accountEndpoint;
@@ -18,18 +19,32 @@ namespace Azure.CosmosDB.GeoApi
             _accountKey = ConfigurationManager.AppSettings["CosmosDb:Key"];
         }
 
-        public Task<DocumentResponse<T>> ReadAsync<T>(string id, string dbId, string collectionId)
+        public async Task<DocumentResponse<T>> ReadAsync<T>(string id, string dbId, string collectionId)
         {
             var uri = UriFactory.CreateDocumentUri(dbId, collectionId, id);
 
-            return GetClient().ReadDocumentAsync<T>(uri, new RequestOptions { PartitionKey = new PartitionKey(id) });
+            return await GetClient().ReadDocumentAsync<T>(uri, new RequestOptions { PartitionKey = new PartitionKey(id) });
         }
 
-        public Task<ResourceResponse<Document>> WriteAsync<T>(T data, string dbId, string collectionId)
+        public async Task<ResourceResponse<Document>> WriteAsync<T>(T data, string dbId, string collectionId)
         {
             var uri = UriFactory.CreateDocumentCollectionUri(dbId, collectionId);
 
-            return GetClient().CreateDocumentAsync(uri, data);
+            return await GetClient().CreateDocumentAsync(uri, data);
+        }
+
+        public async Task<ResourceResponse<Document>> UpsertAsync<T>(T data, string dbId, string collectionId)
+        {
+            var uri = UriFactory.CreateDocumentCollectionUri(dbId, collectionId);
+
+            return await GetClient().UpsertDocumentAsync(uri, data);
+        }
+
+        public async Task<ResourceResponse<Document>> DeleteAsync(string dbId, string collectionId)
+        {
+            var uri = UriFactory.CreateDocumentCollectionUri(dbId, collectionId);
+
+            return await GetClient().DeleteDocumentAsync(uri);
         }
 
         private DocumentClient GetClient()

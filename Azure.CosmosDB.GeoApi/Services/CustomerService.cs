@@ -1,31 +1,34 @@
 ﻿using Azure.CosmosDB.GeoApi.Entities;
+using Azure.CosmosDB.GeoApi.Repository.Interfaces;
+using Azure.CosmosDB.GeoApi.Services.Interfaces;
 using System;
+using System.Threading.Tasks;
 
-namespace Azure.CosmosDB.GeoApi
+namespace Azure.CosmosDB.GeoApi.Services
 {
-    public class CustomerService
+    public class CustomerService : ICustomerService
     {
-        private readonly CosmosDbBaseRepository _cosmosDbRepo;
+        private readonly ICosmosDbBaseRepository _cosmosDbRepo;
 
-        public CustomerService(CosmosDbBaseRepository cosmosDbRepo)
+        public CustomerService(ICosmosDbBaseRepository cosmosDbRepo)
         {
             _cosmosDbRepo = cosmosDbRepo;
         }
 
-        public Guid CreateCustomer(Customer mockPerson)
+        public async Task<Guid> CreateCustomerAsync(Customer mockPerson)
         {
             mockPerson.Id = Guid.NewGuid();
 
-            var response = _cosmosDbRepo.WriteAsync<Customer>(mockPerson, "Db", "Customer").Result;
+            var response = await _cosmosDbRepo.WriteAsync<Customer>(mockPerson, "Db", "Customer");
 
             return Guid.Parse(response.Resource.Id);
         }
 
-        public Customer GetCustomer(Guid id)
+        public async Task<Customer> GetCustomerAsync(Guid id)
         {
-            var person = _cosmosDbRepo.ReadAsync<Customer>(id.ToString(), "Db", "Customer");
+            var person = await _cosmosDbRepo.ReadAsync<Customer>(id.ToString(), "Db", "Customer");
 
-            return person.Result.Document;
+            return person.Document;
         }
     }
 }
