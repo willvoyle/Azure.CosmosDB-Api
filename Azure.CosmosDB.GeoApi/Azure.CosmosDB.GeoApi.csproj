@@ -52,6 +52,7 @@
     <Compile Include="Helpers\CosmosDbHelper.cs" />
     <Compile Include="Repoistory\CosmosDbBaseRepository.cs" />
     <Compile Include="Entities\Customer.cs" />
+    <Compile Include="DTOs\DocDbRepsonseHolder.cs" />
     <Compile Include="Repoistory\Interfaces\ICosmosDbBaseRepository.cs" />
     <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

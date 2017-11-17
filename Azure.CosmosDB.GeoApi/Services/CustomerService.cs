@@ -21,14 +21,14 @@ namespace Azure.CosmosDB.GeoApi.Services
 
             var response = await _cosmosDbRepo.WriteAsync<Customer>(mockPerson, "Db", "Customer");
 
-            return Guid.Parse(response.Resource.Id);
+            return (response.IsSuccess) ? Guid.Parse(response.Data.Id) : default(Guid);
         }
 
         public async Task<Customer> GetCustomerAsync(Guid id)
         {
-            var person = await _cosmosDbRepo.ReadAsync<Customer>(id.ToString(), "Db", "Customer");
+            var response = await _cosmosDbRepo.ReadAsync<Customer>(id.ToString(), "Db", "Customer");
 
-            return person.Document;
+            return (response.IsSuccess) ? response.Data.Document : default(Customer);
         }
     }
 }
